@@ -1,4 +1,4 @@
-from flask import Flask, g, Response, make_response, request
+from flask import Flask, g, Response, make_response, request, session
 from datetime import datetime, date
 
 app = Flask(__name__)
@@ -145,6 +145,48 @@ def ymd(fmt):
 def dt():
     datestr = request.values.get('date', date.today(), type=ymd('%Y-%m-%d'))
     return "우리나라 시간 형식: " + str(datestr)
+
+
+# request.environ
+@app.route('/reqenv')
+def reqenv():
+    return ('REQUEST_METHOD: %(REQUEST_METHOD) s <br>'
+            'SCRIPT_NAME: %(SCRIPT_NAME) s <br>'
+            'PATH_INFO: %(PATH_INFO) s <br>'
+            'QUERY_STRING: %(QUERY_STRING) s <br>'
+            'SERVER_NAME: %(SERVER_NAME) s <br>'
+            'SERVER_PORT: %(SERVER_PORT) s <br>'
+            'SERVER_PROTOCOL: %(SERVER_PROTOCOL) s <br>'
+            'wsgi.version: %(wsgi.version) s <br>'
+            'wsgi.url_scheme: %(wsgi.url_scheme) s <br>'
+            'wsgi.input: %(wsgi.input) s <br>'
+            'wsgi.errors: %(wsgi.errors) s <br>'
+            'wsgi.multithread: %(wsgi.multithread) s <br>'
+            'wsgi.multiprocess: %(wsgi.multiprocess) s <br>'
+            'wsgi.run_once: %(wsgi.run_once) s') % request.environ
+
+
+# Cookie
+# from flask import Response
+# Cookie __init__ Arguments
+# key, value, max_age, expires, domian, path
+
+# http://local.com:5000/wc?key=token&val=abc
+@app.route('/wc')
+def wc():
+    key = request.args.get('key')
+    val = request.args.get('val')
+    res = Response("SET COOKIE")
+    res.set_cookie(key, val)
+    return make_response(res)
+
+
+# http://local.com:5000/rc?key=token&val=abc
+@app.route('/rc')
+def rc():
+    key = request.args.get('key')  # token
+    val = request.cookies.get(key)
+    return "cookie['" + key + "]" + val
 
 
 @app.route("/")
