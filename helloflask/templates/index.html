@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Jinja Test Page</title>
+</head>
+<body>
+<div>Jinja Test: {{title}}-{{mu}}</div>
+    {{"abc {ef} ghi"}}</br>
+    {{"}}>><string>String</string>"}}</br>
+    <hr>
+    {{ "<strong>Strong</strong>"|safe}}</br>
+    {{ "<strong>Strong</strong>" | striptags}}
+
+    <hr>
+        <pre>
+        {% raw %}
+        {% if True %}
+        TTT
+        {% endif %}
+        {% endraw %}
+
+        ttt 한글
+        {%- if True -%}
+            TTT
+        {%- endif -%}qqq
+        </pre>
+</body>
+</html>

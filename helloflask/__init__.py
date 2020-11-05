@@ -1,8 +1,9 @@
-from flask import Flask, g, Response, make_response, request, session
+from flask import Flask, g, Response, make_response, request, render_template, session, Markup
 from datetime import datetime, date
 
 app = Flask(__name__)
 app.debug = True
+# app.jinja_env.trim_blocks=True
 
 #  subdomain
 app.config['SERVER_NAME'] = "local.com:5000"
@@ -187,6 +188,27 @@ def rc():
     key = request.args.get('key')  # token
     val = request.cookies.get(key)
     return "cookie['" + key + "]" + val
+
+
+# Templates(Jinja)_trim_block
+@app.route('/tmpl/')
+def t():
+    tit = Markup("<strong>Title</Strong>")
+    mu = Markup("<h1>iii=<i>%s</i></h1>")
+    h = mu % "Italic"
+    print("h=", h)
+    print(">>>>>", type(tit))
+    return render_template('index.html', title=tit, mu=h)
+
+
+# excape
+# quotation excape -> ""
+# safe string & striptage
+# {{ "<strong>String</string>"|safe}}
+# {{ "<string>String</string>" | striptage}}
+
+
+# Markup
 
 
 @app.route("/")
