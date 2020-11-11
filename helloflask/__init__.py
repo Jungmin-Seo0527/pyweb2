@@ -1,8 +1,10 @@
 from flask import Flask, g, Response, make_response, request, render_template, session, Markup
 from datetime import datetime, date
+from datetime import datetime
 
 app = Flask(__name__)
 app.debug = True
+
 # app.jinja_env.trim_blocks=True
 
 #  subdomain
@@ -236,7 +238,51 @@ def tmpl2():
     b = (2, "만남2", "노사연", True, [a])
     c = (3, "만남3", "익명", False, [a, b])
     d = (4, "만남4", "익명", False, [a, b, c])
-    return render_template("index.html", lst2=[a, b, c, d])
+    return render_template("index_loop.html", lst2=[a, b, c, d])
+
+
+# if condition
+# {% if <condition> %}
+# {% elseif <other condition> %}
+# {% endif %}
+
+
+# class, recursive for
+class Nav:
+    def __init__(self, title, url='#', children=[]):
+        self.title = title
+        self.url = url
+        self.children = children
+
+
+@app.route("/tmpl3/")
+def tmpl3():
+    py = Nav("파이썬", "http://serch.naver.com")
+    java = Nav("자바", "http://search.naver.com")
+    t_prg = Nav("프로그래밍 언어", "http://search.naver.com", [py, java])
+
+    jinja = Nav("Jinja", "http://search.naver.com")
+    gc = Nav("Genshi, Cheetah", "http://search.naver.com")
+    flask = Nav("플라스크", "http://search.naver.com", [jinja, gc])
+
+    spr = Nav("스프링", "http://search.naver.com")
+    ndjs = Nav("노드js", "http://search.naver.com")
+    t_webf = Nav("웹 프레임워크", "http://search.naver.com", [flask, spr, ndjs])
+
+    my = Nav("나의 일상", "http://search.naver.com")
+    issue = Nav("이슈 게시판", "http://search.naver.com")
+    t_others = Nav("기타", "http://search.naver.com", [my, issue])
+
+    return render_template("index_loop.html", navs=[t_prg, t_webf, t_others])
+
+
+# parent's loop
+
+
+# block (template inheritance)
+@app.route("/main/")
+def main():
+    return render_template('index2.html')
 
 
 @app.route("/")

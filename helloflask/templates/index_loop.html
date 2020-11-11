@@ -1,31 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
+<title>Jinja Test Page</title>
+
 <head>
     <meta charset="UTF-8">
-    <title>loop Exaple</title>
+    <title>loop Example</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
+{% set title='TTT' %}
 <ul>
     {% for i in lst %}
     <li>{{i[0]}}: {{i[1]}}</li>
     {% endfor %}
 
     {% for title, name in lst %}
-        <li>{{title}}: {{name}}</li>
+    <li>{{title}}: {{name}}</li>
     {% else %}
-        <li>Ther is no data</li>
+    <li>Ther is no data</li>
     {% endfor %}
 
     {% for item in lst %}
-        <li class="{{loop.cycle('aaa', 'bbb')}}">{{item[0]}}: {{item[1]}}</li>
+    <li class="{{loop.cycle('aaa', 'bbb')}}">{{item[0]}}: {{item[1]}}</li>
     {% endfor %}
+    <ul>
+        {% for rank, title, name, hide, ref in lst2 recursive %}
+        <li>
+            {{title}}: {{name}}
+            <ul class="sub">{{loop(ref)}}</ul>
+        </li>
+        {% endfor %}
 
-    {% for rank, title, name, hide, ref in lst2 recursive %}
+    </ul>
+</ul>
+
+<hr>
+
+<ul>
+    {% for nav in navs recursive %}
     <li>
-        {{title}}: {{name}}
-        <ul class=""sub>{{loop(ref)}}</ul>
+        <a href="nav.url | e">{{nav.title}}-{{loop.depth}}</a>
+        {%- if nav.children -%}
+        <ul class="{% if loop.depth !=1%} font-sm {% endif %}">
+            {{loop(nav.children)}}
+        </ul>
+        {%- endif -%}
     </li>
     {% endfor %}
 </ul>
+
 </body>
 </html>
