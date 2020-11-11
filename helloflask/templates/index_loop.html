@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>loop Exaple</title>
+</head>
+<body>
+<ul>
+    {% for i in lst %}
+    <li>{{i[0]}}: {{i[1]}}</li>
+    {% endfor %}
+
+    {% for title, name in lst %}
+        <li>{{title}}: {{name}}</li>
+    {% else %}
+        <li>Ther is no data</li>
+    {% endfor %}
+
+    {% for item in lst %}
+        <li class="{{loop.cycle('aaa', 'bbb')}}">{{item[0]}}: {{item[1]}}</li>
+    {% endfor %}
+
+    {% for rank, title, name, hide, ref in lst2 recursive %}
+    <li>
+        {{title}}: {{name}}
+        <ul class=""sub>{{loop(ref)}}</ul>
+    </li>
+    {% endfor %}
+</ul>
+</body>
+</html>

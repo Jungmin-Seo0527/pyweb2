@@ -210,6 +210,34 @@ def t():
 
 # Markup
 
+# FOR loop
+@app.route("/forLoop/")
+def loop():
+    lst = [("만남1", "김건모"), ("만남2", "노사연")]
+    return render_template('index_loop.html', lst=lst)
+
+
+# loop object
+# for loop속에서 기본으로 제공되는 object : '현재 for loop의 self'
+# loop.index : 1부터 시작하는 index값 (cf. loop.index0)
+# loop.revindex: n-1내림차순 index값 (cf. loop.revindex0)
+# loop.first: boolean(isThisFirstItem), loop의 첫번째인지의 여부
+# loop.last: boolean(isThisLastItem), loop의 마지막인지의 여부
+# loop.length: size
+# loop.depth: loop 깊이
+# loop.cycle: 짝, 홀수번째 구분
+
+# for loop Filtering
+
+# for recursion
+@app.route("/tmpl2/")
+def tmpl2():
+    a = (1, "만남1", "김건모", False, [])
+    b = (2, "만남2", "노사연", True, [a])
+    c = (3, "만남3", "익명", False, [a, b])
+    d = (4, "만남4", "익명", False, [a, b, c])
+    return render_template("index.html", lst2=[a, b, c, d])
+
 
 @app.route("/")
 def helloworld():
