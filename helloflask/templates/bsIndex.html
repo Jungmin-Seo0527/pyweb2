@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index_style.css') }}">
+
+</head>
+<body>
+
+    <div>
+
+        네이버 웹툰 리스트
+        <a href="/about">어바웃페이지로 이동</a>
+
+    </div>
+
+    <div class="daum_content">
+        <h1>네이버 웹툰 리스트</h1>
+        <ul>
+            {% for i in list %}
+                <li>{{i}}</li>
+            {% endfor %}
+
+        </ul>
+
+    </div>
+
+
+
+</body>
+</html>
+ 
+
+.daum_content {
+
+    padding: 20px;
+    border: 10px solid green;
+    border-radius: 50px;
+
+}

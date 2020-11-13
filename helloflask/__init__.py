@@ -1,6 +1,9 @@
 from flask import Flask, g, Response, make_response, request, render_template, session, Markup
 from datetime import datetime, date
 from datetime import datetime
+import requests
+from bs4 import BeautifulSoup
+import sqlite3
 
 app = Flask(__name__)
 app.debug = True
@@ -49,7 +52,8 @@ def wsgi_test():
         # 실제 서버에서 어플리케이션으로부터 응답(Response)의 상태(Status)와 헤더(Header), 그리고 예외(Exception)의
         # 유무를 확인받아 실행하게 되는데 status와 response_headers는 HTTP응답 명세에 근거하여 작성한다.
         body = 'The request method was %s' % environ['REQUEST_METHOD']
-        headers = [('Content-Type', 'text/plain'), ('Content-Length', str(len(body)))]
+        headers = [('Content-Type', 'text/plain'),
+                   ('Content-Length', str(len(body)))]
         start_response('200 OK', headers)
         return [body]
 
@@ -283,6 +287,49 @@ def tmpl3():
 @app.route("/main/")
 def main():
     return render_template('index2.html')
+
+
+# 네이버 웹툰 만화 리스트 보여주기
+@app.route("/bs/")
+def bs():
+    url = "https://comic.naver.com/webtoon/weekday.nhn"
+    res = requests.get(url)
+    res.raise_for_status()
+
+    soup = BeautifulSoup(res.text, "lxml")
+
+    # 네이버 웹툰 전체 목록 가져오기
+    cartoons = soup.find_all("a", attrs={"class": "title"})
+    # class 속성이 title인 모든 "a" element 를 반환
+
+    cartoon_list = []
+    for cartoon in cartoons:
+        cartoon_list.append(cartoon.get_text())
+
+    #create table, insert data
+    filepath="webtoon.db"
+    conn=sqlite3.connect(filepath)
+    cur=conn.cursor()
+    conn.execute('CREATE TABLE IF NOT EXISTS webtoon(name TEXT, no int);')
+    conn.commit()
+    # sql="INSERT INTO webtoon VALUES (?)"
+    # cur.execute(sql, cartoon_list[0])
+    who="tlqkf2"
+    
+    cur.execute("insert into webtoon values (?, ?)", (who, 12))
+    # cur.executemany("insert into webtoon values (?, ?)", (cartoon_list, no))
+
+    for i in cartoon_list:
+        cur.execute("insert into webtoon values(?, ?)", (i, 1))
+
+    conn.commit()
+    conn.close()
+    return render_template("bsIndex.html", list=cartoon_list)
+
+
+@app.route("/about/")
+def about():
+    return "여기는 어바웃입니다"
 
 
 @app.route("/")
