@@ -48,4 +48,12 @@ for page in range(1, 6):
         price=movie.find("p", attrs={"class":"price2 v2"}).find("span").get_text()
         rate=movie.find("em", attrs={"class":"score_num"}).get_text()
         
+        genre_url=movie.find("a", attrs={"class":"NPI=a:dcontent"})["href"]
+        res_genre=requests.get(genre_url)
+        res_genre.raise_for_status()
+        soup_genre=BeautifulSoup(genre_url.text, "lxml")
+        genre=soup_genre.find("a", attrs={"class":"NPI=a:clink,i:100004"}) # class 명은 url에 따라 다름... -> 좀더 공부가 필요해 보인다
+
+
+        
         
