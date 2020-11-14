@@ -4,6 +4,8 @@ from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
 import sqlite3
+from selenium import webdriver
+import time
 
 app = Flask(__name__)
 app.debug = True
@@ -306,16 +308,16 @@ def bs():
     for cartoon in cartoons:
         cartoon_list.append(cartoon.get_text())
 
-    #create table, insert data
-    filepath="webtoon.db"
-    conn=sqlite3.connect(filepath)
-    cur=conn.cursor()
+    # create table, insert data
+    filepath = "webtoon.db"
+    conn = sqlite3.connect(filepath)
+    cur = conn.cursor()
     conn.execute('CREATE TABLE IF NOT EXISTS webtoon(name TEXT, no int);')
     conn.commit()
     # sql="INSERT INTO webtoon VALUES (?)"
     # cur.execute(sql, cartoon_list[0])
-    who="tlqkf2"
-    
+    who = "tlqkf2"
+
     cur.execute("insert into webtoon values (?, ?)", (who, 12))
     # cur.executemany("insert into webtoon values (?, ?)", (cartoon_list, no))
 
@@ -330,6 +332,95 @@ def bs():
 @app.route("/about/")
 def about():
     return "여기는 어바웃입니다"
+
+
+# google movie list(title, price, rate, genre, url)
+# google play 영화 인기차트는 스크롤을 내리기 전에는 그 밑에 있는 정보를 못보는것 주의!!
+# chromedriver 필수
+# 성공!!!
+@app.route("/google_movie/")
+def googleMovie():
+    # 크롬창의 띄우지 않고 백그라운드로 실행해서 스크롤을 내려 아래에 있는 정보 로딩
+    options = webdriver.ChromeOptions()
+    options.headless = True
+    options.add_argument("window-size=1920x1080")
+    browser = webdriver.Chrome(options=options)
+    # browser.maximize_window()
+
+    # 페이지 이동
+    url = "https://play.google.com/store/movies/top"
+    browser.get(url)
+
+    # 스크롤 내리기
+    browser.execute_script("window.scrollTo(0, 1080)")
+    interval = 2
+    prev_height = browser.execute_script("return document.body.scrollHeight")
+    while True:
+        browser.execute_script("window.scrollTo(0, document.body.scrollHeight)")
+        time.sleep(interval)  # 스크롤 내리고 로딩 시간 임의로 2초로 함
+        cur_height = browser.execute_script("return document.body.scrollHeight")
+        if cur_height == prev_height:
+            break
+        prev_height = cur_height
+    print("done")
+    browser.get_screenshot_as_file("google_movie_test.png")
+
+    # db 만들기
+    filepath = "google_movies.db"
+    conn = sqlite3.connect(filepath)
+    cur = conn.cursor()
+
+    conn.executescript("""drop table if exists google_movies;
+    create table google_movies(tite text, genre text, rate text, price text, url text);
+    """)
+
+    conn.commit()
+
+    # 스크래핑
+    soup = BeautifulSoup(browser.page_source, "lxml")
+
+    movies = soup.find_all("div", attrs={"class": "Vpfmgd"})
+
+    # title, price, rate, genre, url
+    for movie in movies:
+        title = movie.find("div", attrs={"class": "WsMG1c nnK0zc"}).get_text()
+        genre = movie.find("div", attrs={"class": "KoLSrc"})
+        # 장르가 표기되지 않은 것이 있음
+        if genre:
+            genre = genre.get_text()
+        else:
+            genre = "NULL"
+        # rate 우선 보류
+        rate = movie.find("div", attrs={"role": "img"})  # 별점 5개 만점에 4.4개를 받았습니다. -> 4.4만 추출...
+        if rate:
+            rate = rate["aria-label"]
+        else:
+            rate = "NULL"
+        price = movie.find("span", attrs={"class": "VfPpfd ZdBevf i5DZme"}).get_text()
+        link = movie.find("a", attrs={"class": "JC71ub"})["href"]
+
+        conn.execute("insert into google_movies values (?, ?, ?, ?, ?)", (title, genre, rate, price, url))
+
+    conn.commit()
+    conn.close()
+    return "google"
+
+
+# naver movie list
+# google과는 다르게 동적 페이지?(용어를 정확하게 모르겠다. -> 스크롤을 내려야지 로딩이 되면서 다음 정보가 화면에 출력되는 방식...)
+# 가 아니고 페이지를 넘기면서 리스트를 스크랩 해야 함
+# """drop table if exists naver_movies;
+#     create table naver_movies(tite text, genre text, rate text, price text, url text);
+#     """
+# 문제.. 장르를 보려면 다시 크롤링 작업이 필요할것 같다...
+@app.route("/naver_movies/")
+def naverMovie():
+    for page in range(1, 6):
+        url = "https://serieson.naver.com/movie/top100List.nhn?page={}&rankingTypeCode=PC_D".format(page)
+        res = requests.get(url)
+        res.raise_for_status()
+
+        soup = BeautifulSoup(res.text, "lxml")
 
 
 @app.route("/")
