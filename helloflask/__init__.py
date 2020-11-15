@@ -389,7 +389,7 @@ def googleMovie():
         if genre:
             genre = genre.get_text()
         else:
-            genre = "NULL"
+            genre = "NULL" 
         # rate 우선 보류
         rate = movie.find("div", attrs={"role": "img"})  # 별점 5개 만점에 4.4개를 받았습니다. -> 4.4만 추출...
         if rate:
