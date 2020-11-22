@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            h1 {
+                background-color:red;
+            }
+            .article{
+                text-align: center;
+                width: 300px;
+                border: 5px solid blue;
+                border-radius: 20px;
+                padding: 0 20px 20px 20px;
+                margin: 1em auto;
+
+            }
+            .article form {
+                display: flex;
+                flex-direction: column;
+            }
+            .article form input {
+                margin: 1em 0;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>This is h1 heading.</h1>
+        <h2>This is h2 heading. </h2>
+        <div class='article'>
+            <h3>This is article 1</h3>
+            <p>Hello this is a  paragraph</p>
+            <p>This is a link to <a href='https://google.com'>Google</a></p>
+        </div>
+        <div class='article'>
+            <h3>This is article 2</h3>
+            <form action='#hello' metho='POST'>
+                <label for='name'>Name</label>
+                <input id='name' type='text' name='name' placeholder='type your name'>
+                <input type='submit' value='Submit'>
+            </form>
+        </div>
+    </body>
+</html>

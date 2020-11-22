@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <h1>{{item[0].name}}</h1>
+        {{item[0].description}}</br>
+        {{item[0].price}}</br>
+        {{item[0].course}}</br>
+        <a href={{url_for('editMenu', restaurant_id=restaurant_id, 
+        menu_id=item[0].id)}}>Edit</a></br>
+        <a href={{url_for('showMenu', restaurant_id=restaurant_id, menu_id=item[0].id)}}>Back</a>
+    </body>
+</html>

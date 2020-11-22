@@ -1,0 +1,14 @@
+<!doctype HTML>
+<html>
+
+<body>
+    <h1>Menus</h1>
+    {% for item in items %}
+    {{ item.name }}<br>
+    {{item.price}}<br>
+    {{item.description}}<br>
+    <a href={{url_for('editMenu', menu_id=item.id)}}>Edit</a><br><br>
+    {% endfor %}
+</body>
+
+</html>
