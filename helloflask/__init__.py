@@ -399,7 +399,7 @@ def googleMovie():
         price = movie.find("span", attrs={"class": "VfPpfd ZdBevf i5DZme"}).get_text()
         link = movie.find("a", attrs={"class": "JC71ub"})["href"]
 
-        conn.execute("insert into google_movies values (?, ?, ?, ?, ?)", (title, genre, rate, price, url))
+        conn.execute("insert into google_movies values (?, ?, ?, ?, ?)", (title, genre, rate, price, link))
 
     conn.commit()
     conn.close()
